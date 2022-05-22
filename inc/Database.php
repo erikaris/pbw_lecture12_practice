@@ -6,23 +6,26 @@ class Database
     public function connect()
     {
         try {
-            $this->connection = new mysqli(DB_HOST, DB_USERNAME, DB_PASSWORD, DB_DATABASE_NAME);
+            $dbOptions = [
+                \PDO::ATTR_DEFAULT_FETCH_MODE => \PDO::FETCH_OBJ,
+                \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION
+            ];
 
-            if (mysqli_connect_errno()) {
-                throw new Exception("Could not connect to database.");
+            $this->connection = new \PDO("mysql:dbname=" . DB_DATABASE_NAME . ";host=" . DB_HOST, DB_USERNAME, DB_PASSWORD, $dbOptions);
+
+            if ($this->connection->errorCode()) {
+                throw new Exception("Failed to connect to MySQL: " . $this->connection->errorCode());
             }
         } catch (Exception $e) {
             throw new Exception($e->getMessage());
         }
     }
 
-    public function select($query = "", $params = [])
+    public function select($query = "", $params = array())
     {
         try {
             $stmt = $this->executeStatement($query, $params);
-            $result = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
-            $stmt->close();
-
+            $result = $stmt->fetchAll();
             return $result;
         } catch (Exception $e) {
             throw new Exception($e->getMessage());
@@ -30,20 +33,15 @@ class Database
         return false;
     }
 
-    private function executeStatement($query = "", $params = [])
+    public function executeStatement($query = "", $params = array())
     {
         try {
             $stmt = $this->connection->prepare($query);
-
             if ($stmt === false) {
                 throw new Exception("Unable to do prepared statement: " . $query);
             }
 
-            if ($params) {
-                $stmt->bind_param($params[0], $params[1]);
-            }
-
-            $stmt->execute();
+            $stmt->execute($params);
 
             return $stmt;
         } catch (Exception $e) {
