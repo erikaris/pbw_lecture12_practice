@@ -57,18 +57,8 @@ class CourseController extends BaseController
 
     function addPost($pathParams, $payload)
     {
-        $courses = array(
-            (object) array(
-                "id" => 1,
-                "name" => "Pemrograman Berbasis Web"
-            ),
-            (object) array(
-                "id" => 2,
-                "name" => "Pemrograman Android"
-            )
-        );
-
-        array_push($courses, $payload);
+        $this->model->addCourse($payload);
+        $courses = $this->model->listCourses();
 
         $this->sendOutput(
             json_encode($courses),
@@ -79,26 +69,8 @@ class CourseController extends BaseController
 
     function updatePut($pathParams, $payload)
     {
-        $courses = array(
-            (object) array(
-                "id" => 1,
-                "name" => "Pemrograman Berbasis Web"
-            ),
-            (object) array(
-                "id" => 2,
-                "name" => "Pemrograman Android"
-            )
-        );
-
-        $courseId = $pathParams["id"];
-
-        foreach ($courses as $course) {
-            if ($course->id == $courseId) {
-                foreach (array_keys($payload) as $key) {
-                    $course->{$key} = $payload[$key];
-                }
-            }
-        }
+        $this->model->updateCourse($pathParams["id"], $payload);
+        $courses = $this->model->listCourses();
 
         $this->sendOutput(
             json_encode($courses),
@@ -109,24 +81,8 @@ class CourseController extends BaseController
 
     function deleteDelete($pathParams, $payload)
     {
-        $courses = array(
-            (object) array(
-                "id" => 1,
-                "name" => "Pemrograman Berbasis Web"
-            ),
-            (object) array(
-                "id" => 2,
-                "name" => "Pemrograman Android"
-            )
-        );
-
-        $courseId = $pathParams["id"];
-
-        foreach ($courses as $key => $course) {
-            if ($course->id == $courseId) {
-                array_splice($courses, $key, 1);
-            }
-        }
+        $this->model->deleteCourse($pathParams["id"]);
+        $courses = $this->model->listCourses();
 
         $this->sendOutput(
             json_encode($courses),

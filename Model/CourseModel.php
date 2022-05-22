@@ -7,20 +7,31 @@ class CourseModel extends Database
 
     function __construct()
     {
-        $this->courses = array(
-            (object) array(
-                "id" => 1,
-                "name" => "Pemrograman Berbasis Web"
-            ),
-            (object) array(
-                "id" => 2,
-                "name" => "Pemrograman Android"
-            )
-        );
+        $this->connect();
     }
 
     function listCourses()
     {
-        return $this->courses;
+        return $this->select("SELECT * FROM courses", array());
+    }
+
+    function detailCourse($id)
+    {
+        return $this->select("SELECT * FROM courses WHERE id = :id", array("id" => $id));
+    }
+
+    function addCourse($data)
+    {
+        $this->executeStatement("INSERT courses (id, name) VALUES (:id, :name)", array("name" => $data["name"], "id" => $data["id"]));
+    }
+
+    function updateCourse($id, $data)
+    {
+        $this->executeStatement("UPDATE courses SET name = :name WHERE id = :id", array("name" => $data["name"], "id" => $id));
+    }
+
+    function deleteCourse($id)
+    {
+        $this->executeStatement("DELETE FROM courses WHERE id = :id", array("id" => $id));
     }
 }
