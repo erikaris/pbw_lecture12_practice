@@ -3,7 +3,7 @@ class Database
 {
     protected $connection = null;
 
-    public function __construct()
+    public function connect()
     {
         try {
             $this->connection = new mysqli(DB_HOST, DB_USERNAME, DB_PASSWORD, DB_DATABASE_NAME);
